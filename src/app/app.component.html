@@ -1,0 +1,35 @@
+
+<div class="row" style="margin-top: 30px;">
+    <div class="col-3"></div>
+    <div class="col-6" style=" border: 1px solid #000;">
+       <span style="font-weight: bold;">
+        Welcome to Lit HTML Web Components!!
+       </span> 
+        <div class="row">
+            <div class="col-4">
+                <admin-comp [admin]=data.administrativeData (update)="updateData($event)"> </admin-comp>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <house-hold [HouseHold]=data.ContractModule.HouseHoldModel
+                    (updateHouseHold)="updateHouseHoldData($event)">
+                </house-hold>
+            </div>
+        </div>
+        <div class="row">
+            <div>
+                <bicycle-comp [Bicycle]=data.ContractModule.BicycleModel (updateBicycle)="updateBicycleData($event)">
+                </bicycle-comp>
+            </div>
+        </div>
+
+        <div class="row">
+            <div>
+                <span>
+                    {{data|json}}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

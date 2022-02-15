@@ -1,0 +1,125 @@
+<html>
+   <head>
+   <!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+      <script>
+         function getAddressData(zipCode){
+         
+         
+         var http = new XMLHttpRequest();
+         var url = 'https://corsanywhere.herokuapp.com/https://postdirekt.de/plzserver/PlzAjaxServlet';
+         var params = 'finda=city&city='+zipCode+'&lang=de_DE';
+         http.open('POST', url, true);
+         
+         //Send the proper header information along with the request
+         http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+         
+         http.onreadystatechange = function() {//Call a function when the state changes.
+             if(http.readyState == 4 && http.status == 200) {      
+         	   loadDoc(JSON.parse(http.responseText),zipCode)
+             }
+         }
+         http.send(params);
+         }
+         
+         function loadDoc(data,zipCode) {
+         
+         var city= data.rows[0].city;
+         
+         var http = new XMLHttpRequest();
+         var url = 'https://corsanywhere.herokuapp.com/https://postdirekt.de/plzserver/PlzAjaxServlet';
+         var params = 'plz_city='+city+'&plz_plz='+zipCode+'&plz_city_clear=&plz_district=&finda=plz&plz_street=&lang=de_DE';
+         http.open('POST', url, true);
+         
+         //Send the proper header information along with the request
+         http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+         
+         http.onreadystatechange = function() {//Call a function when the state changes.
+             if(http.readyState == 4 && http.status == 200) {
+                populateCity(JSON.parse(http.responseText));
+             }
+         }
+         http.send(params);
+         }
+         function populateCity(data){		
+         		var cities = data.rows;
+         		var select = document.getElementById("districtdropdown");		
+         		for(index in cities) {
+         		{
+         		if(cities[index].street){
+         			select.options[select.options.length] = new Option(cities[index].street, cities[index].street);
+         		}
+         		}			
+         		document.getElementById("cityBox").value=cities[0].city;
+         }
+         }
+         function prepareData(){
+         	var data = {
+         		zipCode:document.getElementById("zipCode").value,
+         		city:document.getElementById("cityBox").value,
+         		country:document.getElementById("country").value,
+         		houseNumber:document.getElementById("houseNumber").value,
+         		street:document.getElementById('districtdropdown').value
+         	}
+			let response = document.getElementById('response');
+			response.innerHTML= JSON.stringify(data);         
+         }
+      </script>
+	  <style>
+		div{
+		margin:10px
+		}
+		.form{
+		outline: double;
+			padding: 39px;
+			margin: 50px;
+		}
+	  </style>
+   </head>
+   <body>
+   <div class='row'>
+   <div class='col-2'></div>
+	<div class='col-4'>
+		<div class='row form'>
+	<div>
+         <input type='text' class='form-control' id='zipCode'  placeholder='Zip Code'/>
+      </div>
+      <div>
+         <input type='text' class='form-control' id='cityBox' placeholder='City'/>
+      </div>
+      <div>
+         <select class='form-select' id='districtdropdown'>
+				<option value="" disabled selected>please select city</option>		 
+         </select>
+      </div>
+      <div>
+         <input type='text' class='form-control' id='houseNumber' placeholder='house number'/>
+      </div>
+      <div>
+         <input type='text' class='form-control' value='Deutschland' id='country' placeholder='country'/>
+      </div>
+      <button class='btn btn-primary' onclick='prepareData()'>Info</button>
+      <script>
+         var input = document.getElementById("zipCode");
+         	input.addEventListener("keyup", function(event) {
+				document.getElementById("cityBox").value='';
+				document.getElementById("houseNumber").value='';
+				document.getElementById('districtdropdown').value='';
+         	if (document.getElementById("zipCode").value.length==5) {
+         		event.preventDefault();								
+         		getAddressData(document.getElementById("zipCode").value);
+         		}
+         	});
+         				
+      </script>
+   </div>   	
+	</div>
+      </div>
+	  <div class='row'>	
+		<div class='col-2'></div>
+		<div class='col-6'>
+			<p id='response'></p>
+		</div>	  
+	  </div>
+   </body>
+</html>
